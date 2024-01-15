@@ -143,7 +143,7 @@ public class XMLGenerator {
         int hashCode = str.hashCode();
         int range = max - min + 1;
         int number = Math.abs(hashCode) % range + min;
-        return number;
+        return Math.abs(number);
     }
 
     @CrossOrigin(origins = "*") // or "*" for all origins
@@ -298,10 +298,10 @@ public class XMLGenerator {
             product.appendChild(productID);
 
             Element productName = doc.createElement("productName");
-            productName.appendChild(doc.createTextNode(DESCRIPTORS_SET1[(nameNumber+i) % DESCRIPTORS_SET1.length] + " "
-                    + DESCRIPTORS_SET2[(cityNumber * i) % DESCRIPTORS_SET2.length] + " "
-                    + DESCRIPTORS_SET3[(nameNumber * i) % DESCRIPTORS_SET3.length] + " "
-                    + PRODUCTS[(cityNumber-i) % PRODUCTS.length]));
+            productName.appendChild(doc.createTextNode(DESCRIPTORS_SET1[Math.abs(nameNumber % DESCRIPTORS_SET1.length)] + " "
+                    + DESCRIPTORS_SET2[Math.abs((cityNumber * i) % DESCRIPTORS_SET2.length)] + " "
+                    + DESCRIPTORS_SET3[Math.abs((nameNumber * i) % DESCRIPTORS_SET3.length)] + " "
+                    + PRODUCTS[Math.abs((cityNumber-i) % PRODUCTS.length)]));
             product.appendChild(productName);
 
             Element productCategory = doc.createElement("productCategory");
