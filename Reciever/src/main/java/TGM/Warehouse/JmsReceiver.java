@@ -1,5 +1,8 @@
 package TGM.Warehouse;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Session;
+import jakarta.jms.Topic;
 import org.apache.tomcat.websocket.WsRemoteEndpointAsync;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -41,7 +44,7 @@ public class JmsReceiver {
 
 
     @JmsListener(destination = "SampleTopic")
-    public void receiveMessage(String message) {
+    public void receiveMessage(String message) throws JMSException {
         String patternString = "\"warehouseID\":\"(-?\\d+)\"";
 
         Pattern pattern = Pattern.compile(patternString);
@@ -57,6 +60,10 @@ public class JmsReceiver {
 
         System.out.println("//");
         System.out.println(message);
+
+        Topic topic = jmsTemplate.getConnectionFactory().createConnection()
+                .createSession(false, Session.AUTO_ACKNOWLEDGE)
+                .createTopic("bestaetigungTopic");
 
         jmsTemplate.setPubSubDomain(true);
         jmsTemplate.convertAndSend("bestaetigungTopic", Integer.parseInt(matcher.group(1)));
