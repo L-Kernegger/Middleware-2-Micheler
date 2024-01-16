@@ -16,7 +16,7 @@ public class WarehouseController {
 
     @PostMapping("/send-data")
     public String sendData(@RequestParam String name, @RequestParam String city, @RequestParam String destination) {
-        momSender.sendWarehouseData(name, city, destination);
+        momSender.sendWarehouseDataToTopic(name, city);
         return "Data sent to " + destination;
     }
 }

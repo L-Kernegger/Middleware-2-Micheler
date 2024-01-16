@@ -1,8 +1,10 @@
 package TGM.Warehouse;
 
 import org.apache.tomcat.websocket.WsRemoteEndpointAsync;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +19,10 @@ import java.util.regex.Pattern;
 @RestController
 public class JmsReceiver {
 
-    public static HashMap<String, String> log = new HashMap<>();
+    @Autowired
+    private JmsTemplate jmsTemplate;
+
+    public static HashMap<Integer, String> log = new HashMap<>();
 
     public static String send = "[]";
 
@@ -35,7 +40,7 @@ public class JmsReceiver {
     }
 
 
-    @JmsListener(destination = "yourQueueName")
+    @JmsListener(destination = "SampleTopic")
     public void receiveMessage(String message) {
         String patternString = "\"warehouseID\":\"(-?\\d+)\"";
 
@@ -45,13 +50,19 @@ public class JmsReceiver {
         send = appendObjectToJsonArray(send,message);
 
         if (matcher.find()) {
-            log.put(matcher.group(1), message);
+            log.put(Integer.parseInt(matcher.group(1)), message);
         } else {
             System.out.println("Kein Warehouse ID im Message gefunden");
         }
 
         System.out.println("//");
         System.out.println(message);
+
+        jmsTemplate.setPubSubDomain(true);
+        jmsTemplate.convertAndSend("bestaetigungTopic", Integer.parseInt(matcher.group(1)));
+        jmsTemplate.setPubSubDomain(false);
+
+
     }
 
     @GetMapping(value = "/get-data", produces = MediaType.APPLICATION_JSON_VALUE)

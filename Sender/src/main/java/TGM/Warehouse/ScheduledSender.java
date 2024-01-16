@@ -4,10 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 @Component
 public class ScheduledSender {
+
+
 
     private final MOMSender momSender;
 
@@ -32,10 +36,8 @@ public class ScheduledSender {
 
     @Scheduled(fixedRate = 5000) // every 5 seconds
     public void sendMessagesPeriodically() {
-        // Example: Sending a fixed message to a fixed destination
-        String destinationQueue = "yourQueueName";
         String name =  generateRandomString(1,10);
         String city = generateRandomString(1,10);
-        momSender.sendWarehouseData(name, city, destinationQueue);
+        momSender.sendWarehouseDataToTopic(name, city);
     }
 }
